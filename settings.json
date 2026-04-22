@@ -1,0 +1,7 @@
+{
+    "host": "DKHRAPTH.aternos.me",
+    "port": "25878",
+    "username": "MinecraftBot",
+    "edition": "java",
+    "javaVersion": "1.21.11"
+}
