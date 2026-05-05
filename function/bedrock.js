@@ -80,7 +80,7 @@ module.exports = {
         port: config.port,
         username: config.username,
         offline: true,
-        connectTimeout: 30000
+        connectTimeout: 90000
       });
 
       activeClient.on('connect', () => {
