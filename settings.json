@@ -1,7 +1,7 @@
 {
-    "host": "DKHRAPTH.aternos.me",
-    "port": "25878",
+    "host": "khoamayum.aternos.me",
+    "port": "22341",
     "username": "MinecraftBot",
-    "edition": "java",
+    "edition": "bedrock",
     "javaVersion": "1.21.11"
 }

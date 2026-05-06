@@ -3,376 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Bot Dashboard v2.0</title>
+    <title>Minecraft Bot Dashboard</title>
     <script src="/socket.io/socket.io.js"></script>
     <style>
         @import url('https://fonts.cdnfonts.com/css/minecraftia');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background-color: #222;
-            background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png');
             color: #fff;
             font-family: 'Minecraftia', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background: #3a3a3a;
-            border: 6px solid #000;
-            padding: 25px;
-            box-shadow: 15px 15px 0px #0a0a0a;
-        }
-
-        .header {
-            text-align: center;
-            border-bottom: 6px solid #888;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            color: #55FF55;
-            text-shadow: 3px 3px #000;
-            font-size: 28px;
-            letter-spacing: 2px;
-        }
-
-        .section-title {
-            color: #FFAA00;
-            text-shadow: 2px 2px #000;
-            font-size: 16px;
-            margin: 15px 0 10px 0;
-            border-bottom: 3px solid #FFAA00;
-            padding-bottom: 5px;
-        }
-
-        .config-panel {
-            background: #2a2a2a;
-            border: 3px solid #555;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .config-row {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            color: #FFAA00;
-            font-size: 12px;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px #000;
-        }
-
-        input, select {
-            background: #111;
-            color: #55FF55;
-            border: 2px solid #555;
-            padding: 10px;
-            font-family: 'Minecraftia', sans-serif;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #FFAA00;
-            box-shadow: 0 0 10px #FFAA00;
-        }
-
-        .status-box {
-            background: #1a1a1a;
-            padding: 12px;
-            border: 3px solid #555;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        #status {
-            color: #FFAA00;
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 2px 2px #000;
-        }
-
-        .status-ok { color: #55FF55 !important; }
-        .status-err { color: #FF5555 !important; }
-        .status-connecting { color: #FFAA00 !important; }
-
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 15px;
-            font-family: 'Minecraftia', sans-serif;
-            font-size: 13px;
-            cursor: pointer;
-            border: 4px solid #000;
-            color: white;
-            text-shadow: 2px 2px #000;
-            transition: all 0.1s;
-            font-weight: bold;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-        }
-
-        button:active {
-            transform: translate(2px, 2px);
-            box-shadow: inset 4px 4px 0px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-start { background: #55AA55; box-shadow: inset -4px -4px #336633; }
-        .btn-stop { background: #AA5555; box-shadow: inset -4px -4px #663333; }
-        .btn-bed { background: #8B7355; box-shadow: inset -4px -4px #5C4A36; }
-        .btn-safety { background: #5555AA; box-shadow: inset -4px -4px #333366; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            background: #1a1a1a;
-            padding: 12px;
-            border: 3px solid #555;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        .stat-label {
-            color: #FFAA00;
-            font-size: 11px;
-        }
-
-        .stat-value {
-            color: #55FF55;
-            font-size: 14px;
-            margin-top: 5px;
-            font-weight: bold;
-        }
-
-        .log-label {
-            color: #FFAA00;
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-
-        .log-container {
-            background: #0a0a0a;
-            height: 250px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 3px solid #000;
-            font-size: 11px;
-            color: #888;
-            line-height: 1.6;
-        }
-
-        .log-entry {
-            margin-bottom: 4px;
-            border-left: 3px solid #555;
-            padding-left: 8px;
-            color: #aaa;
-            word-break: break-word;
-        }
-
-        .log-entry.error { color: #FF5555; border-left-color: #FF5555; }
-        .log-entry.success { color: #55FF55; border-left-color: #55FF55; }
-        .log-entry.info { color: #FFAA00; border-left-color: #FFAA00; }
-
-        /* Scrollbar styling */
-        .log-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .log-container::-webkit-scrollbar-track {
-            background: #111;
-        }
-
-        .log-container::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 4px;
-        }
-
-        .log-container::-webkit-scrollbar-thumb:hover {
-            background: #777;
-        }
-
-        .responsive {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .config-panel {
-                grid-template-columns: 1fr;
-            }
-
-            .controls {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .responsive {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .edition-badge {
-            display: inline-block;
-            background: #333;
-            padding: 5px 10px;
-            border: 2px solid #555;
-            margin-left: 10px;
-            font-size: 12px;
-            color: #55FF55;
-        }
-
-        .op-status-box {
-            background: #1a1a1a;
-            padding: 12px;
-            border: 3px solid #555;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 14px;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
+        }
+        .container {
+            width: 95vw;
+            height: 95vh;
+            max-width: 800px;
+            background: #3a3a3a;
+            border: 4px solid #000;
+            padding: 10px;
+            display: grid;
+            grid-template-rows: auto auto auto 1fr;
             gap: 10px;
         }
-
-        #opStatus {
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 2px 2px #000;
-        }
-
-        .op-ok { color: #55FF55 !important; }
-        .op-err { color: #FF5555 !important; }
-        .op-checking { color: #FFAA00 !important; }
-
-        .alert-box {
-            background: #663333;
-            border: 4px solid #FF5555;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: none;
+        .header {
             text-align: center;
-            font-size: 13px;
-            color: #FF5555;
-            text-shadow: 2px 2px #000;
-            font-weight: bold;
-            animation: pulse 0.5s infinite;
+            border-bottom: 4px solid #888;
+            padding-bottom: 5px;
+            color: #55FF55;
+            font-size: 16px;
         }
-
-        .alert-box.show {
-            display: block;
+        .grid-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        .panel {
+            background: #2a2a2a;
+            border: 2px solid #555;
+            padding: 5px;
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        label { color: #FFAA00; font-size: 10px; }
+        input, select {
+            background: #111; color: #55FF55; border: 1px solid #555;
+            padding: 4px; font-family: 'Minecraftia', sans-serif; font-size: 10px; width: 100%;
+        }
+        .checkbox-row {
+            display: flex; align-items: center; gap: 5px; margin-top: 5px;
+        }
+        .checkbox-row input { width: auto; cursor: pointer; }
+        .status-panel {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5px; text-align: center; font-size: 12px;
+        }
+        .box { background: #1a1a1a; padding: 5px; border: 2px solid #555; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        button {
+            padding: 8px; font-family: 'Minecraftia', sans-serif; font-size: 10px;
+            cursor: pointer; border: 2px solid #000; color: white; font-weight: bold;
+        }
+        .btn-start { background: #55AA55; }
+        .btn-stop { background: #AA5555; }
+        .log-container {
+            background: #0a0a0a; border: 2px solid #000; font-size: 9px;
+            color: #888; overflow-y: auto; padding: 5px; height: 100%;
+        }
+        .log-entry { margin-bottom: 2px; border-left: 2px solid #555; padding-left: 4px; }
+        .error { color: #FF5555; border-color: #FF5555; }
+        .success { color: #55FF55; border-color: #55FF55; }
+        .info { color: #FFAA00; border-color: #FFAA00; }
+        .alert-box {
+            background: #663333; border: 2px solid #FF5555; color: #FF5555;
+            font-size: 10px; text-align: center; display: none; padding: 5px; margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            🤖 MINECRAFT BOT DASHBOARD v2.0
-            <span class="edition-badge" id="editionBadge">-</span>
+        <div class="header">MINECRAFT BOT DASHBOARD <span id="editionBadge"></span></div>
+        
+        <div class="grid-top">
+            <div class="panel">
+                <div class="config-grid">
+                    <div><label>Host</label><input type="text" id="hostInput" value="localhost"></div>
+                    <div><label>Port</label><input type="text" id="portInput" value="19132"></div>
+                    <div><label>Username</label><input type="text" id="usernameInput" value="MinecraftBot"></div>
+                    <div>
+                        <label>Edition</label>
+                        <select id="editionSelect">
+                            <option value="bedrock">Bedrock</option>
+                            <option value="java">Java</option>
+                        </select>
+                    </div>
+                    <div id="versionRow" style="display:none;"><label>Version</label><input type="text" id="versionInput" value="1.20.1"></div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="autoRejoin" checked>
+                    <label>Auto Rejoin</label>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="status-panel">
+                    <div class="box">STATUS<br><span id="status" style="color:#FFAA00">DISCONNECTED</span></div>
+                    <div class="box">OP STATUS<br><span id="opStatus" style="color:#FFAA00">UNKNOWN</span></div>
+                    <div class="box">UPTIME<br><span id="uptime" style="color:#55FF55">0h 0m 0s</span></div>
+                    <div class="box">GAME TIME<br><span id="gameTime" style="color:#55FF55">-</span></div>
+                </div>
+                <div class="alert-box" id="alertBox"><span id="alertMessage"></span></div>
+            </div>
         </div>
 
-        <!-- Configuration Panel -->
-        <div class="section-title">⚙️ BOT CONFIGURATION</div>
-        <div class="config-panel">
-            <div class="config-row">
-                <label for="hostInput">🌐 Server Host</label>
-                <input type="text" id="hostInput" placeholder="localhost" value="localhost">
-            </div>
-            <div class="config-row">
-                <label for="portInput">🔌 Port</label>
-                <input type="text" id="portInput" placeholder="19132" value="19132">
-            </div>
-            <div class="config-row">
-                <label for="usernameInput">👤 Bot Username</label>
-                <input type="text" id="usernameInput" placeholder="MinecraftBot" value="MinecraftBot">
-            </div>
-            <div class="config-row">
-                <label for="editionSelect">📦 Edition</label>
-                <select id="editionSelect">
-                    <option value="bedrock">Bedrock</option>
-                    <option value="java">Java Edition</option>
-                </select>
-            </div>
-            <div class="config-row" style="display: none;" id="versionRow">
-                <label for="versionInput">🎮 Java Version</label>
-                <input type="text" id="versionInput" placeholder="1.20.1" value="1.20.1">
-            </div>
-        </div>
-
-        <!-- Status -->
-        <div class="section-title">📊 STATUS</div>
-        <div class="status-box">
-            STATUS: <span id="status">DISCONNECTED</span>
-        </div>
-
-        <!-- OP Status -->
-        <div class="op-status-box">
-            👑 OP STATUS: <span id="opStatus">UNKNOWN</span>
-        </div>
-
-        <!-- Alert Panel -->
-        <div class="alert-box" id="alertBox">
-            🚨 <span id="alertMessage">-</span>
-        </div>
-
-        <!-- Controls -->
-        <div class="section-title">🎮 CONTROLS</div>
         <div class="controls">
-            <button class="btn-start" onclick="startBot()">▶️ START BOT</button>
-            <button class="btn-stop" onclick="stopBot()">⏹️ STOP BOT</button>
+            <button class="btn-start" onclick="startBot()">START BOT</button>
+            <button class="btn-stop" onclick="stopBot()">STOP BOT</button>
         </div>
 
-        <!-- Stats -->
-        <div class="section-title">📈 STATISTICS</div>
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-label">⏱️ UPTIME</div>
-                <div class="stat-value" id="uptime">0h 0m 0s</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">🌍 GAME TIME</div>
-                <div class="stat-value" id="gameTime">-</div>
-            </div>
-        </div>
-
-        <!-- Logs -->
-        <div class="section-title">📜 LOGS</div>
         <div class="log-container" id="logs">
-            <div class="log-entry info">⏳ Waiting for connection...</div>
+            <div class="log-entry info">Waiting for connection...</div>
         </div>
     </div>
 
@@ -380,32 +135,27 @@
         const socket = io();
         const statusEl = document.getElementById('status');
         const logsEl = document.getElementById('logs');
-        const editionBadge = document.getElementById('editionBadge');
         const editionSelect = document.getElementById('editionSelect');
         const versionRow = document.getElementById('versionRow');
-        let safeModeOn = true;
-        
+
         document.addEventListener('DOMContentLoaded', () => {
             fetch('settings.json')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('hostInput').value = data.host;
-                    document.getElementById('portInput').value = data.port;
-                    document.getElementById('usernameInput').value = data.username;
+                    document.getElementById('hostInput').value = data.host || 'localhost';
+                    document.getElementById('portInput').value = data.port || '19132';
+                    document.getElementById('usernameInput').value = data.username || 'MinecraftBot';
                     editionSelect.value = data.edition || 'bedrock';
                     document.getElementById('versionInput').value = data.javaVersion || '1.20.1';
-                    versionRow.style.display = editionSelect.value === 'java' ? 'flex' : 'none';
+                    editionSelect.dispatchEvent(new Event('change'));
                 })
-                .catch(error => {
-                    console.error('Error loading config:', error);
-                });
+                .catch(error => console.error('Error loading config:', error));
         });
-
+        
         editionSelect.addEventListener('change', (e) => {
-            versionRow.style.display = e.target.value === 'java' ? 'flex' : 'none';
+            versionRow.style.display = e.target.value === 'java' ? 'block' : 'none';
         });
 
-        // Socket listeners
         socket.on('time_update', (data) => {
             document.getElementById('uptime').innerText = data.uptime;
             document.getElementById('gameTime').innerText = data.gamePeriod;
@@ -413,101 +163,56 @@
 
         socket.on('status_update', (status) => {
             statusEl.innerText = status.toUpperCase();
-            statusEl.className = '';
-            if (status === 'Connected') statusEl.classList.add('status-ok');
-            else if (status === 'Disconnected') statusEl.classList.add('status-err');
-            else statusEl.classList.add('status-connecting');
+            statusEl.style.color = status === 'Connected' ? '#55FF55' : (status === 'Disconnected' ? '#FF5555' : '#FFAA00');
         });
 
         socket.on('active_edition', (edition) => {
-            if (edition) {
-                editionBadge.innerText = edition.toUpperCase();
-                editionBadge.style.color = edition === 'java' ? '#FF5555' : '#55FF55';
-            } else {
-                editionBadge.innerText = '-';
-            }
+            document.getElementById('editionBadge').innerText = edition ? `[${edition.toUpperCase()}]` : '';
         });
 
         socket.on('op_status_update', (hasOP) => {
-            const opStatusEl = document.getElementById('opStatus');
-            if (hasOP === null) {
-                opStatusEl.innerText = 'CHECKING...';
-                opStatusEl.className = 'op-checking';
-            } else if (hasOP === true) {
-                opStatusEl.innerText = 'YES';
-                opStatusEl.className = 'op-ok';
-                hideAlert();
-            } else {
-                opStatusEl.innerText = 'NO';
-                opStatusEl.className = 'op-err';
-            }
+            const el = document.getElementById('opStatus');
+            if (hasOP === null) { el.innerText = 'CHECKING...'; el.style.color = '#FFAA00'; }
+            else if (hasOP === true) { el.innerText = 'YES'; el.style.color = '#55FF55'; document.getElementById('alertBox').style.display='none'; }
+            else { el.innerText = 'NO'; el.style.color = '#FF5555'; }
         });
 
         socket.on('op_alert', (data) => {
-            showAlert(data.message);
+            document.getElementById('alertMessage').innerText = data.message;
+            document.getElementById('alertBox').style.display = 'block';
         });
 
-        function showAlert(message) {
-            const alertBox = document.getElementById('alertBox');
-            const alertMsg = document.getElementById('alertMessage');
-            alertMsg.innerText = message;
-            alertBox.classList.add('show');
-        }
-
-        function hideAlert() {
-            const alertBox = document.getElementById('alertBox');
-            alertBox.classList.remove('show');
-        }
-
-        socket.on('bot_log', (msg) => {
-            addLog(msg);
-        });
-
+        socket.on('bot_log', addLog);
         socket.on('log_history', (history) => {
             logsEl.innerHTML = '';
-            history.slice().reverse().forEach(msg => {
-                addLog(msg);
-            });
+            history.slice().reverse().forEach(addLog);
         });
 
-        // Helper function to add logs with color
         function addLog(msg) {
             const div = document.createElement('div');
             div.className = 'log-entry';
-
-            // Color coding based on message content
-            if (msg.includes('❌') || msg.includes('Error') || msg.includes('ALERT')) div.classList.add('error');
-            else if (msg.includes('✅') || msg.includes('Success') || msg.includes('OP Status: YES')) div.classList.add('success');
-            else if (msg.includes('⚠') || msg.includes('Warning') || msg.includes('Checking OP') || msg.includes('👑')) div.classList.add('info');
-            else if (msg.includes('🛡') || msg.includes('Safety')) div.classList.add('info');
-
+            if (msg.includes('Error') || msg.includes('ALERT') || msg.includes('NO')) div.classList.add('error');
+            else if (msg.includes('Success') || msg.includes('YES') || msg.includes('Connected')) div.classList.add('success');
+            else div.classList.add('info');
             div.innerText = msg;
-            logsEl.querySelector('.log-entry')?.classList.add('old');
             logsEl.insertBefore(div, logsEl.firstChild);
-
-            // Keep only last 100 logs in UI
-            while (logsEl.children.length > 100) {
-                logsEl.removeChild(logsEl.lastChild);
-            }
+            while (logsEl.children.length > 50) logsEl.removeChild(logsEl.lastChild);
         }
-        // Control functions
+
         function startBot() {
-            const config = {
+            socket.emit('control_bot', 'start', {
                 host: document.getElementById('hostInput').value,
                 port: document.getElementById('portInput').value,
                 username: document.getElementById('usernameInput').value,
-                edition: document.getElementById('editionSelect').value,
-                version: document.getElementById('versionInput').value
-            };
-            socket.emit('control_bot', 'start', config);
+                edition: editionSelect.value,
+                version: document.getElementById('versionInput').value,
+                autoRejoin: document.getElementById('autoRejoin').checked
+            });
         }
 
         function stopBot() {
             socket.emit('control_bot', 'stop');
         }
-
-        // Update edition display on load
-        editionSelect.dispatchEvent(new Event('change'));
     </script>
 </body>
 </html>
