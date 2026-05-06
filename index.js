@@ -2,9 +2,9 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
-const bedrockBot = require('./function/bedrock');
-const javaBot = require('./function/java');
-
+const bedrockBot = require('./bedrock');
+const javaBot = require('./java');
+const fs = require('fs');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 1e6 });
@@ -109,6 +109,33 @@ const startActiveBot = () => {
     javaBot.start(currentConfig, botContext);
   }
 };
+const loadSettingsAndStart = () => {
+  const settingsPath = path.join(__dirname, 'settings.json');
+  
+  if (fs.existsSync(settingsPath)) {
+    try {
+      const data = fs.readFileSync(settingsPath, 'utf8');
+      const settings = JSON.parse(data);
+      currentConfig = {
+        host: settings.host || 'localhost',
+        port: parseInt(settings.port) || 19132,
+        username: settings.username || 'MinecraftBot',
+        version: settings.javaVersion || '1.20.1'
+      };
+      activeEdition = settings.edition || 'bedrock';
+      autoRejoin = true;
+
+      sendLog(`[Auto-Start] Config loaded for ${currentConfig.username}`);
+      startActiveBot();
+
+    } catch (err) {
+      sendLog(`[Auto-Start] Error: ${err.message}`);
+    }
+  } else {
+    sendLog('[Auto-Start] No settings.json found, waiting for manual start.');
+  }
+};
+
 
 app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => {
@@ -157,6 +184,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   sendLog(`Dashboard running on port ${PORT}`);
   sendLog('Minecraft Bot Dashboard v2.0 Ready!');
+  loadSettingsAndStart();
 });
 
 process.on('SIGINT', () => {
